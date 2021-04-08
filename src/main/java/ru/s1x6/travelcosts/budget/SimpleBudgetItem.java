@@ -13,6 +13,12 @@ public class SimpleBudgetItem implements BudgetItem {
     private final ChronoUnit periodicity;
     private final boolean isOncePaid;
     private final boolean isShared;
+    private final boolean isExpense;
+
+    @Override
+    public boolean isExpense() {
+        return isExpense;
+    }
 
     @Override
     public String getName() {

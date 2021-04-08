@@ -3,27 +3,25 @@ package ru.s1x6.travelcosts.model;
 import lombok.Getter;
 import ru.s1x6.travelcosts.budget.BudgetItem;
 
+import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class Travel {
-    private List<BudgetItem> expenses = new ArrayList<>();
-    private List<BudgetItem> incomes = new ArrayList<>();
-    private Period period;
-    private Integer participants;
+    private final List<BudgetItem> budgetItems = new ArrayList<>();
+    private final LocalDate startDate;
+    private final Period period;
+    private final Integer participants;
 
-    public Travel(Period period, Integer participants) {
+    public Travel(LocalDate startDate, Period period, Integer participants) {
+        this.startDate = startDate;
         this.period = period;
         this.participants = participants;
     }
 
-    public void registerAsIncome(BudgetItem budgetItem) {
-        incomes.add(budgetItem);
-    }
-
-    public void registerAsExpense(BudgetItem budgetItem) {
-        expenses.add(budgetItem);
+    public void addBudgetItem(BudgetItem budgetItem) {
+        budgetItems.add(budgetItem);
     }
 }
