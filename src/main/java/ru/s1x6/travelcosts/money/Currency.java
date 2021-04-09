@@ -6,7 +6,6 @@ public enum Currency {
 
     Currency(Double usdRate) {
         this.usdRate = usdRate;
-
     }
 
     public Double getUsdRate() {

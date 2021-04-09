@@ -7,5 +7,6 @@ import ru.s1x6.travelcosts.request.DescriptionRequest;
 
 public interface Calculator {
     CalculationResult calculate(Travel travel, Currency targetCurrency);
+
     Class<? extends DescriptionRequest> getRequestType();
 }

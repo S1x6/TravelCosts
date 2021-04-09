@@ -6,13 +6,15 @@ import ru.s1x6.travelcosts.model.CalculationResult;
 import ru.s1x6.travelcosts.model.Travel;
 import ru.s1x6.travelcosts.money.Currency;
 import ru.s1x6.travelcosts.money.Money;
+import ru.s1x6.travelcosts.period.DatePeriod;
 import ru.s1x6.travelcosts.request.DescriptionRequest;
-import ru.s1x6.travelcosts.request.TotalSingleExpensesRequest;
+import ru.s1x6.travelcosts.request.FirstMonthSingleExpensesRequest;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.time.Period;
 
 @ApplicationScoped
-public class TotalSingleExpensesCalculator implements Calculator {
+public class FirstMonthSingleExpensesCalculator implements Calculator {
 
     @Override
     public CalculationResult calculate(Travel travel, Currency targetCurrency) {
@@ -23,24 +25,12 @@ public class TotalSingleExpensesCalculator implements Calculator {
                 addIfOncePaid(travel, targetCurrency, money, bi);
                 return;
             }
-            addIfRegular(travel, money, bi);
+            money.add(bi.getMoney().convertTo(money.getCurrency()).getValue());
         });
-        return new CalculationResult(null, money, travel.getDatePeriod(), travel.getParticipants());
-    }
-
-    @Override
-    public Class<? extends DescriptionRequest> getRequestType() {
-        return TotalSingleExpensesRequest.class;
-    }
-
-    private void addIfRegular(Travel travel, Money money, BudgetItem bi) {
-        Double value = bi.getMoney().getValue();
-        long between = travel.getDatePeriod().toDays();
-        value = value * between / bi.getPeriodicity().getDuration().toDays();
-        if (bi.isShared()) {
-            value /= travel.getParticipants();
-        }
-        money.add(new Money(value, bi.getMoney().getCurrency()).convertTo(money.getCurrency()).getValue());
+        return new CalculationResult(null,
+                money,
+                new DatePeriod(travel.getDatePeriod().getStartDate(), Period.of(0,1,0)),
+                travel.getParticipants());
     }
 
     private void addIfOncePaid(Travel travel, Currency targetCurrency, Money money, BudgetItem bi) {
@@ -49,5 +39,10 @@ public class TotalSingleExpensesCalculator implements Calculator {
             value /= travel.getParticipants();
         }
         money.add(value);
+    }
+
+    @Override
+    public Class<? extends DescriptionRequest> getRequestType() {
+        return FirstMonthSingleExpensesRequest.class;
     }
 }

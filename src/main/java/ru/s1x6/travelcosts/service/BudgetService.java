@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -40,14 +41,16 @@ public class BudgetService {
     public String describe(Travel travel, List<DescriptionRequest> descriptionRequests, Currency targetCurrency) {
         StringBuilder sb = new StringBuilder();
         calculatorMap.forEach((calculator, formatter) -> {
-            if (descriptionRequests.stream().noneMatch(it -> it.getClass().equals(calculator.getRequestType()))) {
+            Optional<DescriptionRequest> requestOptional = descriptionRequests.stream()
+                    .filter(it -> it.getClass().equals(calculator.getRequestType()))
+                    .findAny();
+            if (!requestOptional.isPresent()) {
                 return;
             }
             CalculationResult calculationResult = calculator.calculate(travel, targetCurrency);
-            sb.append(formatter.format(calculationResult));
+            sb.append(formatter.format(requestOptional.get().getName(), calculationResult));
             sb.append("\n");
         });
         return sb.toString();
     }
-
 }
